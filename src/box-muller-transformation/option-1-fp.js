@@ -1,5 +1,4 @@
-import { partialRight, curry, map } from "lodash";
-import { pipe } from "../utils";
+import { partialRight, curry, map, pipe } from "ramda";
 
 function generateRandomBetween(min, max, exclude) {
   let ranNum = Math.random() * (max - min) + min;
@@ -19,11 +18,10 @@ const createArr = (n) => new Array(n);
 const fill = (arr, value) => arr.fill(value);
 
 const curriedGenerateNumber = curry(generateRandomBetween);
-const curriedMap = curry(map);
 
-const calculateZWithCos = partialRight(calculateZ, Math.cos);
-const calculateZWithSin = partialRight(calculateZ, Math.sin);
-const fillWithZero = partialRight(fill, 0);
+const calculateZWithCos = partialRight(calculateZ, [Math.cos]);
+const calculateZWithSin = partialRight(calculateZ, [Math.sin]);
+const fillWithZero = partialRight(fill, [0]);
 
 const generateNumberWithMin = curriedGenerateNumber(0);
 const generateNumberWithMinMax = generateNumberWithMin(1);
@@ -36,22 +34,16 @@ const generateQuantities = () => ({
 
 const normallyQuantitiesFns = [calculateZWithCos, calculateZWithSin];
 
-const mapWithNormallyQuantitiesFns = curriedMap(normallyQuantitiesFns);
-
 const applyGeneratedQuantities = (quantities) =>
-  mapWithNormallyQuantitiesFns((fn) => fn(quantities));
+  map((fn) => fn(quantities), normallyQuantitiesFns);
 
 export const calculateNormallyDistributedQuantities = pipe(
   generateQuantities,
   applyGeneratedQuantities
 );
 
-const mapWithCalculatingQuantities = partialRight(map, () =>
-  calculateNormallyDistributedQuantities()
-);
-
 export const calculateManyNormallyDistributedQuantities = pipe(
   createArr,
   fillWithZero,
-  mapWithCalculatingQuantities
+  map(calculateNormallyDistributedQuantities)
 );
