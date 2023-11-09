@@ -1,6 +1,7 @@
 import {
   calculateNormallyDistributedQuantities,
   calculateManyNormallyDistributedQuantities,
+  generateRandomQuantitiesMany,
 } from "./box-muller-transformation";
 
-console.log(calculateManyNormallyDistributedQuantities(10));
+console.log(generateRandomQuantitiesMany(10));
